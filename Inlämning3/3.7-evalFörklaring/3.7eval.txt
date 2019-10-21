@@ -1,0 +1,13 @@
+###### 3.7  Eval 
+
+eval är en shell builtin, bash internal command, som bara shell känner igen.
+eval kan ta argument och läsa dom till ett kommando (kombinera ihop), detta kommando läses och exekveras av shell
+
+
+ssh-agent är en child process till parent SSHD daemon, och child processorer kan inte starta/modifiera parent processen.
+Men en function kan, för att funktionen körs i nuvarande/current process.
+
+
+Så vi eval så kan ssh-agent få köras som kommando, då shell accepterar eval.
+
+Man skulle troligen  kunna komma runt detta ifall man använder ssh-agent utility, och använder utility som login shell, men då behövs också ssh envoriment variabler sättas.

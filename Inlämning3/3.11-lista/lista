@@ -1,0 +1,52 @@
+#!/bin/bash
+
+##### FUNCTION
+
+# function for keep track or depth and amount of dots
+function makedots(){
+	filedepth=$(echo "$1" | grep -o '/' - | wc -l)
+
+		for item in `seq $filedepth`; do
+			echo -n ...
+		done
+	justfilename=$(basename "$1")
+		# check permissions
+		if [[ "$3" = "nopermissions" ]];then
+			echo "$2"
+		else
+			echo "$2$justfilename"
+		fi
+
+}
+# search through user search path
+function searchpath(){
+	# search and get dont see 'permission denied'
+	for files in $(find "$1" 2>/dev/null); do
+		if [[ -h $files ]]; then
+			makedots "$files" [L]
+		elif [[ -d "$files" ]]; then
+			if [[ -x "$files" ]]; then
+				makedots "$files" [D]
+			else
+				# permission denied
+				makedots "$files" [D]
+				makedots "$files" ...??? nopermissions
+			fi
+		elif [[ -f "$files" ]]; then
+			makedots "$files" [F]
+		else
+			makedots "???"
+		fi
+	done
+
+
+
+}
+if [[ $# -eq 1 ]]; then
+	searchpath "$1"
+else
+	"Need one argument!!"
+	exit
+fi
+
+

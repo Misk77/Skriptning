@@ -1,0 +1,33 @@
+#!/bin/bash
+clear
+echo "BASE: $0"
+# limit for disk usage df output
+DEFAULTLIMIT=90 
+
+######### FUNCTIONS
+function showdiskdata(){
+	df -Ph | grep -vE 'Filesystem' | awk '{ print $5,$1 }' | while read dfdata;
+	do
+  	 	DISKUSED=$(echo $dfdata | awk '{print $1}')
+  	 	MOUNTPOINT=$(echo $dfdata | awk '{print $2}')
+  	 	if [[ ${DISKUSED%?} -ge ${DEFAULTLIMIT} ]]; then
+			echo ""$DISKUSED" "$MOUNTPOINT""
+  	 	fi
+	done
+}
+function valueerror(){
+	echo "ett heltal förväntades." 2> stderrer
+	exit 1
+
+}
+##############################	MAIN
+if [[ "$1" = *[!0-9]* ]] || [[ "$#" -gt 1 ]]; then
+	valueerror 
+fi
+
+if [[ "$1" = *[0-9]* ]]; then
+	DEFAULTLIMIT="$1"
+	showdiskdata 
+	
+fi
+################################ MAIN ENDS

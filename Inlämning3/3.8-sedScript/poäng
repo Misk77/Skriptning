@@ -1,0 +1,28 @@
+#!/bin/sed -f
+ 
+
+
+# tar bort ifall det börjar med liten bokstav
+/^[a-z]/ d
+# tar bort ifall det börjar på siffra
+/^[0-9]/ d
+# kollar så börjar med stor bokstav föjt av en liten bokstav
+/^\([A-Z][^a-z]\)/ d
+# ta bort decimaltal (inget måste men plus poöng) åtgärdad
+/[,]/ d
+# ta bort ifall det börjar med space
+/^[[:space:]]/d
+# ta bort alla tomma rader
+/^$/d
+# tar bort ifall tab finns någonstans
+/\t/ d 
+# 
+
+
+
+		#la till ett kommatecken efter \2		
+	{	
+ 
+	s/^\([^ ]*\) \([^ ]*\) \([^ ]*\)/\3 \2, \1/
+
+}

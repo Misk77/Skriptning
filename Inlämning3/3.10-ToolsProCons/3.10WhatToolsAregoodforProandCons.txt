@@ -1,0 +1,70 @@
+
+
+#############################	Inlämningsuppgift 3.10 ####################################
+
+
+
+Vid många typer av automatisering kan man välja något av verktygen bash, sed, awkeller python. Vad har verktygen för för- och nackdelar? För vilken typ av uppgifter passar respektive verktyg bäst?
+
+
+################	för- och nackdelar ###############
+
+1. bash
+fördelar:
+	-Om man ska automatisera sysadmin-uppgifter
+	-För att hantera mera komplexa program e.g systemdemoner,webbläsare
+	-Finns oftast på värddatorn, och behöver ej installeras
+	-Lite kod som kan göra många, mycket
+	-om man kan bash så underlättare det hela Linux användandet
+
+
+nackdelar:
+	-svårare att läsa
+	-Kan vara svår att underhålla
+	-För större uppgifter är det ostabilt
+	-inte alltid portabel, olika skal kan ha olika tolkare
+
+
+
+2. sed
+fördelar:
+	-Lätt att manipulera text
+	-lätt att ändra config i andra filer
+
+
+nackdelar:
+	-tar tid att lära sig
+
+
+3. awk : Initials of founders names
+fördelar:
+	-Används för att kunna processera filer, kan få ut data i text
+	-kunna på enkelt sätt få ut kolumner av från en fil med data
+	-bra gällande tal och beräkningar, snabbt
+	-bra ifall man vill fom
+	-awk är ett eget programmeringsspråk och kan jobba självständigt
+nackdelar:
+	- kan inte riktigt komma på något ..... hmmmm
+	-att det mest arbetar beräkningar och data, där awk är som starkast
+
+
+
+
+4. python
+fördelar:
+	-klarar mera komplexa uppgifter 
+	-säkrare, stabilare
+	-dynamiskt språk(också nackdel, kan lätt bli fel)
+	-finns många moduler,stort bibliotek
+	-OOP
+	-lätt att lära sig, bra introduktion programmerinsspråk
+	-kan användas i nästan alla miljöer, enheter(devices)
+	-free-opensource
+nackdelar:
+	-Tar oftast längre tid att göra
+	-inte alltid installerat
+	-snabbheten är inte bästa
+	-säkerheten inte det bästa
+	-Behövs oftast komplettering av andra spräk när det blir "tunga" program
+	-Klarar inte så mycket/hög grafik
+	-fel kan ofta uppstå i run-time

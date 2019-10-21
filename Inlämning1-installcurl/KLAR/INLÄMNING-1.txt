@@ -1,0 +1,187 @@
+###	INLÄMNING 1	###
+
+1.
+Hur fungerar omgivningen och poängen med omgivningssvariabler:
+SVAR:
+-- omgivningen/miljön:
+Är en uppsättning av variabler med värden och program/process, system som manköras
+liknande/samma som sk systemvariabler i andra miljöer.
+Dessa går i arv från föräldrar/parent/processen till barn/child/processen startas
+För att kunna se dessa kan man använda
+env
+Jämnföra med en Shell variabel som bara kan användas i pågående kommandotolk om man inte exportar den som en omvigningsvariabel för barn processer
+
+--- Poängen med omgivningsvariabler
+Att kunna använda variabel utanför pågående kommandotolk/shell
+sk envoriment scope
+Man kan antingen export eller lägga i .profiles eller .bashrc exempelvis som man gör med ssh alias/basch alias knuten till en ssh connections
+
+2.
+Vilken av signalerna avslutar processen
+Allmänn förklaring:
+- TERM, INT: Quick shutdown
+- QUIT: Graceful shutdown
+- HUP: hang-up,  Configuration reload, Gracefully shutdown the old worker processes,Start the new worker processes with a new configuration
+
+--- USR1 and USR 2
+- USR1: Reopen the log files
+- USR2: Upgrade Executable on the fly
+
+
+SIGkill - väntar på signal från andra application ifall det är okej att avsluta() -9 avslutar utan att fråga)
+Kill -KILL <PID>
+pkill -kill <process>
+Övriga som kan döda en process på något sätt:
+-SIGHUP - kan restarta en processor,e.g när man tappar connection så sänds sighup
+-SIGINT - kan stoppa en process ,ctrl+C
+-SIGTERM - Säger åt application att avsluta "cleanly", sparar sitt fårhållande(state)
+- SIGQUIT - används ifall något är väldigt fel och man behöver en hård,snabb avslutning
+-
+
+3. skript som hämtar fil ifall den ej finns i nuvarande mapp:
+if [ -f curl-7.61.1.tar.bz2 ]; then
+     echo " The file exist"
+else
+        wget https://curl.haxx.se/download/curl-7.61.1.tar.bz2
+fi
+
+
+
+
+4. SCRIPT - Blev två stycken , första mera stolt över än den andra sk 4b-versionen, men försökte iaf och testade :)
+
+4a.
+
+#!/bin/bash
+clear
+echo "==========================================="
+echo "EXECUTION OF: $0 "
+echo "==========================================="
+sleep 2
+echo
+
+echo "###    SCRIPT FOR CURL INSTALLATION    ###\n
+=== WARNING THIS WILLL NEED SUDO PERMISSIONS ==\n
+=== PLEASE KNOW WHAT YOU ARE DOING IF INSTALL THIS!! ==="
+read -p "Are you OK with this? Y/N: "
+read ANSWER
+
+case $ANSWER in
+        [y/Y] | [y/Y][e/E][s/S])
+                echo "Lets start the installation"
+                sleep 2
+                ;;
+        [n/N] | [n/N][o/O])
+                echo "This program will be terminated!!"
+                exit 1
+                ;;
+        *)
+        echo "Please enter y/yes OR n/no"
+        ;;
+esac
+
+
+sleep 2
+SOURCE="https://curl.haxx.se/download/curl-7.61.1.tar.bz2"
+CURRENTDIR=${PWD}
+
+if  [ -f curl-7.61.1.tar.bz2 ]
+then
+        printf "File exist already in current directory"
+else
+        printf  "File  doesnt exist, script will download and install"
+        wget ${SOURCE}
+        tar -xvjf curl-7.61.1.tar.bz2 -C ~/$user/Downloads/
+        cd ~/$user/Downloads/curl-7.61.1 && ./configure --prefix=/opt && make && sudo make install
+        sleep 2
+        echo
+        printf "$SOURCE\n has been install into /opt directory\n"
+        sleep 2
+        echo
+        printf "Script will now clean up the downloaded and unpacked files!\n"
+        sudo rm -rf ~/$user/Downloads/curl-7.61.1
+        sudo rm -rf ${CURRENTDIR}/curl-7.61.1.tar.bz2
+
+
+fi
+echo 
+echo "##########################################"
+printf "===        Script is done          ===\n"
+echo "##########################################"
+
+
+### SCRIPT VERSION 2
+4b.
+#!/bin/bash
+set x
+function setup_ENV(){
+clear
+echo "###################################"
+echo "=== EXECUTION OF:: $0           ==="
+echo "###################################"
+sleep 2
+echo
+echo "============================================================"
+echo "### Will add group OPT and access to DIR /opt/ chang mod ###"
+echo "============================================================"
+sleep 2
+sudo groupadd OPT
+sudo chgrp OPT /opt/*
+sudo chmod -R g+rwx /opt/*
+sudo chmod 775 /opt/*
+sleep 2
+echo
+echo "======================================="
+echo "###  Add current user to group OPT  ###"
+echo "See current users groups and permission"
+echo "======================================="
+sudo usermod -aG OPT $USER
+groups $USER
+ls -al /opt
+sleep2
+}
+### starting with function: setup_ENV: Setting up enviroment for grp acces to opt DIR
+setup_ENV
+###
+### Running the code for installation and cleaning up
+
+echo "###       SCRIPT FOR CURL INSTALLATION    ###\n
+=== WARNING THIS WILLL NEED SUDO PERMISSIONS ==\n
+=== PLEASE KNOW WHAT YOU ARE DOING IF INSTALL THIS!! ==="
+
+SOURCE="https://curl.haxx.se/download/curl-7.61.1.tar.bz2"
+CURRENTDIR=${PWD}
+
+## check if file exist or need to be downloaded and unpacked into /opt dir
+if  [ -f curl-7.61.1.tar.bz2 ]
+then
+        printf "File exist already in current directory"
+else
+        printf  "File Doesnt exist, script will download and install\n"
+        wget ${SOURCE}
+        sudo tar -xvjf curl-7.61.1.tar.bz2 -C /opt/ && cd /opt/curl-7.61.1  && ./configure --prefix=/opt && make && sudo make install
+###  Clean up the uneccesary files
+        sleep 2
+        echo "=============================================="
+        echo " ${SOURCE}"
+        printf " has been install into /opt directory \n "
+        echo "=============================================="
+        sleep 2
+        echo "============================================================="
+        printf "Script will now clean up the downloaded and unpacked files!\n"
+        cd ../ && sudo rm -rf curl-7.61.1
+        echo "== REMOVED INSTALLATION FILE =="
+        cd ${CURRENTDIR} && sudo rm -rf curl-7.61.1.tar.bz2
+        echo "== REMOVED THE BZ2 FILE =="
+        echo "============================================================"
+fi
+sleep 2
+echo
+echo "=============================================="
+echo " ${SOURCE} "
+printf " has been install into /opt directory\n"
+printf "      ### === Script is done === ###     \n "
+echo "=============================================="
+
+
+-------------------  SLUT PÅ INLÄMNINGEN -------------------------

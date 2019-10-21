@@ -1,0 +1,119 @@
+#!/bin/bash
+#set -x
+clear
+echo "Base: ""$0"""
+exit_status="0"
+######################### FUNCTIONS BEGINS ##########################
+function noargs(){
+        if [ "$#" -eq 0 ];then
+                echo "ja, vad?" >&2
+                exit 1
+
+        fi
+}
+
+#################
+#function is one args
+function oneargs(){
+        if [ "$#" -eq 1 ]; then
+                echo "vad ""$1"" vad?"
+                exit 1
+        fi
+
+
+        if  [ "$#" -ge 2 ]; then
+                 severalargs "$@"
+
+        fi
+
+}
+########
+# function if -q is first args
+function if_q() {
+        if [ "$1" = "-q" ] && [ "$#" -eq 1 ]; then
+                shift
+                exec 1> /dev/null
+                #noargs Om -q inte ska ge ja,vad kommentera bort denna, annars går den in i oneargs
+        fi
+
+        if [ "$1" = "-q" ] && [ "$#" -gt 1 ]; then
+                shift
+                exec 1> /dev/null
+                oneargs "$@"
+        fi
+
+
+
+}
+#######
+# if more arguments
+function severalargs(){
+         for args in  "${@:2}"; do
+                if [ "$1" = "är" ]; then
+                        if [ -h "$args" ]; then
+                        echo """$args"" är en symbolisk länk."
+			exit_status=2
+                        fi
+                fi
+
+                if [ "$1" = "är" ] && [ -d "$args" ]; then
+                        echo """$args"" är en katalog."
+                fi
+
+                if [[ "$1" = "är" ]] && [[ -e "$args" ]]; then
+                        if [ -f "$args" ] && [[ ! -h "$args" ]]; then
+                        echo """$args"" är en fil."
+                        fi
+                fi
+
+                if [[ "$1" = "är" ]] && [[ ! -e "$args" ]]; then
+                        echo """$args"" finns inte."
+                        exit_status=2
+                fi
+
+                if [ "$1" = "innehåller" ] ; then
+                        if  [ -e "$args" ]; then
+                                packageName=$(dpkg -S "$args" | cut -d: -f1)
+                                echo "$2" finns i "$packageName"  >&1
+
+                        else [ "$1" = "innehåller" ]
+                                echo "Inget innehåller ""$2"""  2>/dev/null
+                                exit_status=2
+                        fi
+                fi
+
+        done
+        ## kollar exit status
+        # if exit_status = exit 3
+        if [[ $exit_status -eq 2 ]]; then
+                exit 2
+        # else exit 0
+        else
+                [[ $exit_status -eq 0 ]]
+                exit 0
+        fi
+
+}
+##########################  FUNCTIONS ENDS ##########################
+## ============== MAIN STARTS
+case "$1" in
+        "är" | "innehåller" )
+                oneargs "$@"
+
+        ;;
+
+        "-q" )
+                if_q "$@"
+        ;;
+
+        "")
+                noargs
+        ;;
+
+        *)
+
+        echo "Fattar inte." >&2
+        exit 1
+
+esac
+## ============ MAIN ENDS
